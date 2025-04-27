@@ -15,7 +15,7 @@ Bun.serve({
             const id = req.params.id;
 
             try {
-                const response = await fetch(
+                const goalResponse = await fetch(
                     `https://www.donationalerts.com/api/v1/donationgoal/${id}`,
                     {
                         headers: {
@@ -23,7 +23,10 @@ Bun.serve({
                         }
                     }
                 );
-                return Response.json(await response.json());
+                const response = Response.json(await goalResponse.json());
+                response.headers.set('Access-Control-Allow-Origin', '*');
+                response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+                return response;
             } catch (error) {
                 return new Response("Invalid Authorization header", { status: 400 });
             }
