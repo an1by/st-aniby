@@ -32,7 +32,7 @@
       "#/*": [
         "src/common/*"
       ],
-      "@donation/*": [
+      "@da/*": [
         "src/donation-alerts/*"
       ]
     }
