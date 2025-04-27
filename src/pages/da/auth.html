@@ -1,0 +1,33 @@
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>st-aniby</title>
+</head>
+<body>
+<script>
+    const extractToken = (url) => {
+        const regex = /.*token=([^&]+)/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const oauthToken = extractToken(window.location.href);
+
+        const resultDiv = document.getElementById("result");
+        if (!oauthToken) {
+            resultDiv.innerText = `ГДЕ ПЕРВЫЙ ТОКЕН? КАК ЭТО ВООБЩЕ ВЫШЛО?`;
+            return;
+        }
+
+        resultDiv.innerHTML = `Твой токен:\n<code>${oauthToken}</code>`
+    })
+</script>
+<div id="result">
+
+</div>
+</body>
+</html>
