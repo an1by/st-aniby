@@ -25,8 +25,9 @@ Bun.serve({
                 );
                 const response = Response.json(await goalResponse.json());
                 response.headers.set('Access-Control-Allow-Origin', '*');
+                response.headers.set('Access-Control-Allow-Credentials ', 'true');
                 response.headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET');
-                response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                response.headers.set('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, Origin');
                 return response;
             } catch (error) {
                 return new Response("Invalid Authorization header", { status: 400 });
