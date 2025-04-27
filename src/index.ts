@@ -1,3 +1,9 @@
+const responseInit: ResponseInit = {
+    headers: {
+        'Access-Control-Allow-Origin': '*'
+    }
+}
+
 Bun.serve({
     port: 3001,
     routes: {
@@ -6,12 +12,12 @@ Bun.serve({
             return Response.redirect("https://aniby.net/", 301);
         },
 
-        "/da/goal-info/:id": async (req, server,) => {
-            const { searchParams } = new URL(req.url)
-            if (!searchParams || !(searchParams.has("token"))) {
-                return new Response("Authorization token not found", { status: 401 });
-            }
 
+        "/da/goal-info/:id": async (req, server,) => {
+            const {searchParams} = new URL(req.url)
+            if (!searchParams || !(searchParams.has("token"))) {
+                return new Response("Authorization token not found", {status: 401});
+            }
             const token = searchParams.get("token")!;
             const id = req.params.id;
 
@@ -24,14 +30,10 @@ Bun.serve({
                         }
                     }
                 );
-                // const response = Response.json(await goalResponse.json());
-                // response.headers.set('Access-Control-Allow-Origin', '*');
-                // response.headers.set('Access-Control-Allow-Credentials ', 'true');
-                // response.headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET');
-                // response.headers.set('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, Origin');
-                return Response.json(await goalResponse.json());
+                const result = await goalResponse.json();
+                return new Response(JSON.stringify(result), responseInit);
             } catch (error) {
-                return new Response("Invalid Authorization header", { status: 400 });
+                return new Response("Invalid Authorization header", {status: 400});
             }
         },
 
@@ -41,6 +43,6 @@ Bun.serve({
     },
 
     fetch(req) {
-        return new Response("Not Found", { status: 404 });
+        return new Response("Not Found", {status: 404});
     },
 });
