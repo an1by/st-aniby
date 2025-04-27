@@ -7,11 +7,12 @@ Bun.serve({
         },
 
         "/da/goal-info/:id": async (req, server,) => {
-            if ( !req.headers.has("Authorization")) {
-                return new Response("Invalid Authorization header", { status: 401 });
+            const { searchParams } = new URL(req.url)
+            if (!searchParams || !(searchParams.has("token"))) {
+                return new Response("Authorization token not found", { status: 401 });
             }
 
-            const authorization = req.headers.get("Authorization")!;
+            const token = searchParams.get("token")!;
             const id = req.params.id;
 
             try {
@@ -19,16 +20,16 @@ Bun.serve({
                     `https://www.donationalerts.com/api/v1/donationgoal/${id}`,
                     {
                         headers: {
-                            Authorization: authorization,
+                            Authorization: `Bearer ${token}`,
                         }
                     }
                 );
-                const response = Response.json(await goalResponse.json());
-                response.headers.set('Access-Control-Allow-Origin', '*');
-                response.headers.set('Access-Control-Allow-Credentials ', 'true');
-                response.headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET');
-                response.headers.set('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, Origin');
-                return response;
+                // const response = Response.json(await goalResponse.json());
+                // response.headers.set('Access-Control-Allow-Origin', '*');
+                // response.headers.set('Access-Control-Allow-Credentials ', 'true');
+                // response.headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET');
+                // response.headers.set('Access-Control-Allow-Headers', 'Accept, Authorization, Content-Type, Origin');
+                return Response.json(await goalResponse.json());
             } catch (error) {
                 return new Response("Invalid Authorization header", { status: 400 });
             }
