@@ -13,13 +13,17 @@ Bun.serve({
         },
 
 
-        "/da/goal-info/:id": async (req, server,) => {
+        "/da/goal-info": async (req, server,) => {
             const {searchParams} = new URL(req.url)
-            if (!searchParams || !(searchParams.has("token"))) {
+            if (!searchParams.has("token")) {
                 return new Response("Authorization token not found", {status: 401});
             }
             const token = searchParams.get("token")!;
-            const id = req.params.id;
+
+            if (!searchParams.has("id")) {
+                return new Response("Goal id not found", {status: 401});
+            }
+            const id = searchParams.get("id")!;
 
             try {
                 const goalResponse = await fetch(
