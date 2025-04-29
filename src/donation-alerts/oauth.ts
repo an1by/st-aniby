@@ -1,21 +1,18 @@
-import {HttpRouter} from "#/utils/http-router.ts";
-import oauthPage from "@/pages/da/auth.html";
+import {Hono} from "hono";
+import {serveStatic} from "hono/bun";
 
-const router = new HttpRouter("/da/oauth", {
-    "": async (req) => {
-        const {searchParams} = new URL(req.url)
-        if (!searchParams.has("scope")) {
-            return new Response("Scopes not found", {status: 401});
-        }
-        const scope = searchParams.get("scope")!;
+const hono = new Hono();
+hono.get("/", (ctx) => {
+    const {searchParams} = new URL(ctx.req.url)
+    if (!searchParams.has("scope")) {
+        ctx.status(401);
+        return ctx.body("Scope not found");
+    }
+    const scope = searchParams.get("scope")!;
 
-        const url = `https://www.donationalerts.com/oauth/authorize?client_id=${Bun.env.DA_APP_ID}
-                &redirect_uri=${Bun.env.HOST}/oauth/confirm
-                &response_type=token
-                &scope=${scope}`;
-        return Response.redirect(url, 301);
-    },
-    "/confirm": oauthPage,
-});
+    const url = `https://www.donationalerts.com/oauth/authorize?client_id=${Bun.env.DA_APP_ID}&redirect_uri=${Bun.env.HOST}/oauth/confirm&response_type=token&scope=${scope}`;
+    return ctx.redirect(url);
+})
+hono.get("/confirm", serveStatic({path: "./assets/da/confirm.html"}))
 
-export default router;
+export default hono;

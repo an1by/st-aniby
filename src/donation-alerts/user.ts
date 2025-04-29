@@ -1,29 +1,30 @@
-import {HttpRouter} from "#/utils/http-router.ts";
-import {allowOriginResponseInit} from "#/utils/response-utils.ts";
 
-const router = new HttpRouter("/da/user", {
-    "/widget": async (req) => {
-        const {searchParams} = new URL(req.url)
-        if (!searchParams.has("accessToken")) {
-            return new Response("Authorization token not found", {status: 401});
-        }
-        const token = searchParams.get("accessToken")!;
+import {Hono} from "hono";
 
-        try {
-            const goalResponse = await fetch(
-                `https://www.donationalerts.com/api/v1/user/widget`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
+const hono = new Hono();
+hono.get("/widget", async (ctx) => {
+    const {searchParams} = new URL(ctx.req.url)
+    if (!searchParams.has("accessToken")) {
+        ctx.status(401);
+        return ctx.body("Authorization token not found");
+    }
+    const token = searchParams.get("accessToken")!;
+
+    try {
+        const goalResponse = await fetch(
+            `https://www.donationalerts.com/api/v1/user/widget`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-            );
-            const result = await goalResponse.json();
-            return new Response(JSON.stringify(result), allowOriginResponseInit);
-        } catch (error) {
-            return new Response("DonationAlerts Error", {status: 400});
-        }
-    },
+            }
+        );
+        const result = await goalResponse.json();
+        ctx.header("Access-Control-Allow-Origin", "*");
+        return ctx.json(result);
+    } catch (error) {
+        ctx.status(400);
+        return ctx.body("DonationAlerts Error");
+    }
 });
-
-export default router;
+export default hono;

@@ -1,34 +1,36 @@
-import {HttpRouter} from "#/utils/http-router.ts";
-import {allowOriginResponseInit} from "#/utils/response-utils.ts";
+import {Hono} from "hono";
 
-const router = new HttpRouter("/da/goal", {
-    "/info": async (req) => {
-        const {searchParams} = new URL(req.url)
-        if (!searchParams.has("accessToken")) {
-            return new Response("Authorization token not found", {status: 401});
-        }
-        const token = searchParams.get("accessToken")!;
+const hono = new Hono();
+hono.get("/info", async (ctx) => {
+    const {searchParams} = new URL(ctx.req.url)
+    if (!searchParams.has("accessToken")) {
+        ctx.status(401);
+        return ctx.body("Authorization token not found");
+    }
+    const token = searchParams.get("accessToken")!;
 
-        if (!searchParams.has("id")) {
-            return new Response("Goal id not found", {status: 401});
-        }
-        const id = searchParams.get("id")!;
+    if (!searchParams.has("id")) {
+        ctx.status(401);
+        return ctx.body("Goal id not found");
+    }
+    const id = searchParams.get("id")!;
 
-        try {
-            const goalResponse = await fetch(
-                `https://www.donationalerts.com/api/v1/donationgoal/${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
+    try {
+        const goalResponse = await fetch(
+            `https://www.donationalerts.com/api/v1/donationgoal/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
-            );
-            const result = await goalResponse.json();
-            return new Response(JSON.stringify(result), allowOriginResponseInit);
-        } catch (error) {
-            return new Response("DonationAlerts Error", {status: 400});
-        }
-    },
+            }
+        );
+        const result = await goalResponse.json();
+        ctx.header("Access-Control-Allow-Origin", "*");
+        return ctx.json(result);
+    } catch (error) {
+        ctx.status(400);
+        return ctx.body("DonationAlerts Error");
+    }
 });
 
-export default router;
+export default hono;

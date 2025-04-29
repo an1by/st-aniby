@@ -1,12 +1,11 @@
-import {HttpRouter} from "#/utils/http-router.ts";
 import oauth from "@da/oauth.ts";
 import goal from "@da/goal.ts";
 import user from "@da/user.ts";
+import {Hono} from "hono";
 
-const router = new HttpRouter("/da", {
-    "/goal": goal,
-    "/oauth": oauth,
-    "/user": user
-});
+const hono = new Hono();
+hono.route("/goal", goal);
+hono.route("/oauth", oauth);
+hono.route("/user", user);
 
-export default router;
+export default hono;
