@@ -9,7 +9,9 @@ const app = new OpenAPIHono();
 app.get("/", async (ctx) =>
     ctx.redirect("https://github.com/an1by/st-aniby", 301));
 
-app.get("/tos", serveStatic({path: "./assets/tos.html"}));
+app.get("/tos", (ctx) => ctx.redirect("/terms-of-service"));
+app.get("/terms-of-service", serveStatic({path: "./assets/terms-of-service.html"}));
+app.get("/privacy-policy", serveStatic({path: "./assets/privacy-policy.html"}));
 
 app.route("/da", donationAlerts);
 app.route("/docs/da", donationAlertsExternalDocumentation);
