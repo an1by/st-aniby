@@ -1,12 +1,17 @@
 import donationAlerts from "@/donation-alerts";
-import termsOfService from "@/terms-of-service";
 import {swaggerUI} from "@hono/swagger-ui";
 import {OpenAPIHono} from "@hono/zod-openapi";
 import donationAlertsExternalDocumentation from "src/donation-alerts/docs";
+import {serveStatic} from "hono/bun";
 
 const app = new OpenAPIHono();
+
+app.get("/", async (ctx) =>
+    ctx.redirect("https://github.com/an1by/st-aniby", 301));
+
+app.get("/tos", serveStatic({path: "./assets/tos.html"}));
+
 app.route("/da", donationAlerts);
-app.route("/", termsOfService);
 app.route("/docs/da", donationAlertsExternalDocumentation);
 
 app.get(
