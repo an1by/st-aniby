@@ -3,6 +3,7 @@ import {swaggerUI} from "@hono/swagger-ui";
 import {OpenAPIHono} from "@hono/zod-openapi";
 import donationAlertsExternalDocumentation from "src/donation-alerts/docs";
 import {serveStatic} from "hono/bun";
+import { cors } from 'hono/cors'
 
 const app = new OpenAPIHono();
 
@@ -12,6 +13,15 @@ app.get("/", async (ctx) =>
 app.get("/tos", (ctx) => ctx.redirect("/terms-of-service"));
 app.get("/terms-of-service", serveStatic({path: "./assets/terms-of-service.html"}));
 app.get("/privacy-policy", serveStatic({path: "./assets/privacy-policy.html"}));
+
+app.use(
+    '/da/*',
+    cors({
+        origin: '*',
+        allowHeaders: ['X-Custom-Header', 'Upgrade-Insecure-Requests'],
+        credentials: false
+    })
+);
 
 app.route("/da", donationAlerts);
 app.route("/docs/da", donationAlertsExternalDocumentation);

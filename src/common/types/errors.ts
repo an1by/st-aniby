@@ -5,7 +5,7 @@ export const ExternalErrorResponse = {
         content: {
             'application/json': {
                 schema: z.object({
-                    message: z.string().openapi({example: "DonationAlerts Error"})
+                    message: z.string().openapi({example: "DonationAlerts Error"}),
                 }),
             }
         },

@@ -52,7 +52,6 @@ const handler = async (ctx: Context) => {
         );
         const result = await goalResponse.json();
         const user = UserSchema.parse(result);
-        ctx.header("Access-Control-Allow-Origin", "*");
         return ctx.json(user, 200);
     } catch (error) {
         return DonationAlertsThrowableError(ctx, error);

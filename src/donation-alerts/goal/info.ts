@@ -4,9 +4,8 @@ import {GoalIdQuery} from "#/types/donation-alerts/goal";
 import {GoalInfoSchema} from "#/types/donation-alerts/goal/info.ts";
 import {BadRequestResponse, ExternalErrorResponse} from "#/types/errors.ts";
 import type {Context} from "hono";
-import {DonationAlertsAccessTokenError} from "#/errors/donation-alerts.ts";
+import {DonationAlertsAccessTokenError, DonationAlertsThrowableError} from "#/errors/donation-alerts.ts";
 import AccessToken from "#/types/donation-alerts/token/access-token.ts";
-import {UserSchema} from "#/types/donation-alerts/user";
 
 const route = createRoute({
     method: 'get',
@@ -60,10 +59,9 @@ const handler = async (ctx: Context) => {
         );
         const result = await goalResponse.json();
         const goal = GoalInfoSchema.parse(result);
-        ctx.header("Access-Control-Allow-Origin", "*");
         return ctx.json(goal, 200);
     } catch (error) {
-        return ctx.json({message: "DonationAlerts Error"}, 400);
+        return DonationAlertsThrowableError(ctx, error);
     }
 };
 
